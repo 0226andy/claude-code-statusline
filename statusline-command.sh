@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code status line — https://code.claude.com/docs/en/statusline
-# Line 1: model · directory · git branch · session cost
+# Line 1: session name · model · directory · git branch · session cost
 # Line 2: context window usage bar · lines changed · elapsed time
 # Line 3: 5h / 7d rate limit usage bars · reset time and countdown
 
@@ -10,7 +10,7 @@ input=$(cat)
 # a tab would not work here, since bash `read` collapses runs of IFS
 # whitespace and would drop empty fields, shifting everything after them.
 IFS=$'\x1f' read -r MODEL DIR PCT COST DUR API_DUR ADDED REMOVED EFFORT FAST \
-                    H5_PCT H5_RESET D7_PCT D7_RESET <<<"$(
+                    H5_PCT H5_RESET D7_PCT D7_RESET SESSION_NAME TRANSCRIPT <<<"$(
   jq -r '[
     .model.display_name              // "claude",
     .workspace.current_dir           // .cwd // ".",
@@ -25,7 +25,9 @@ IFS=$'\x1f' read -r MODEL DIR PCT COST DUR API_DUR ADDED REMOVED EFFORT FAST \
     (.rate_limits.five_hour.used_percentage | if . == null then "" else floor end),
     (.rate_limits.five_hour.resets_at      // ""),
     (.rate_limits.seven_day.used_percentage | if . == null then "" else floor end),
-    (.rate_limits.seven_day.resets_at      // "")
+    (.rate_limits.seven_day.resets_at      // ""),
+    (.session_name                   // ""),
+    (.transcript_path                // "")
   ] | map(tostring) | join("\u001f")' <<<"$input"
 )"
 
@@ -91,6 +93,15 @@ if branch=$(git -C "$DIR" rev-parse --abbrev-ref HEAD 2>/dev/null); then
   GIT=" ${DIM}on${RESET} ${MAGENTA}⎇ ${branch}${dirty}${RESET}"
 fi
 
+# --- session name ---
+# Prefer session_name from the JSON; versions without that field still
+# record /rename in the transcript, so fall back to its last customTitle.
+if [[ -z $SESSION_NAME && -f $TRANSCRIPT ]]; then
+  SESSION_NAME=$(grep -o '"customTitle":"[^"]*"' "$TRANSCRIPT" 2>/dev/null | tail -n 1 | cut -d'"' -f4)
+fi
+SESSION=""
+[[ -n $SESSION_NAME ]] && SESSION="${YELLOW}✎ ${SESSION_NAME}${RESET} ${DIM}·${RESET} "
+
 # --- formatting helpers ---
 COST_FMT=$(printf '%.2f' "$COST")
 ELAPSED=$(dur_fmt "$DUR")
@@ -119,7 +130,7 @@ if [[ $D7_PCT =~ ^[0-9]+$ ]]; then
 fi
 
 # --- output ---
-printf '%s\n' "${CYAN}◆ ${MODEL}${RESET}${EXTRA} ${DIM}·${RESET} ${BLUE}📁 ${DIR}${RESET}${GIT} ${DIM}·${RESET} \$${COST_FMT}"
+printf '%s\n' "${SESSION}${CYAN}◆ ${MODEL}${RESET}${EXTRA} ${DIM}·${RESET} ${BLUE}📁 ${DIR}${RESET}${GIT} ${DIM}·${RESET} \$${COST_FMT}"
 printf '%s\n' "$(bar "$PCT" 20) ${PCT}% ${DIM}context · ${RESET}${GREEN}+${ADDED}${RESET}/${RED}-${REMOVED}${RESET} ${DIM}· ${ELAPSED} wall · ${API_ELAPSED} api${RESET}"
 [[ -n $LIMITS ]] && printf '%s\n' "$LIMITS"
 exit 0

@@ -5,7 +5,7 @@
 [English](README.md)
 
 ```text
-◆ Opus 5.5 · high · ⚡fast · 📁 /Users/you/project on ⎇ main* · $1.23
+✎ refactor auth · ◆ Opus 5.5 · high · ⚡fast · 📁 /Users/you/project on ⎇ main* · $1.23
 ████████░░░░░░░░░░░░ 42% context · +156/-23 · 2h 15m 15s wall · 22m 15s api
 5h ██████░░░░ 63% ↻22:17 (2h 11m)  ·  7d █░░░░░░░░░ 18% ↻10/13 01:06 (3d 5h)
 ```
@@ -16,11 +16,11 @@
 
 | 行 | 內容 |
 | --- | --- |
-| 1 | Model 名稱、effort level、fast mode 標記、目前目錄、git branch（working tree 有未提交變更時加 `*`）、本次 session 費用（USD） |
+| 1 | Session 名稱（以 `/rename` 或 `--name` 設定）、Model 名稱、effort level、fast mode 標記、目前目錄、git branch（working tree 有未提交變更時加 `*`）、本次 session 費用（USD） |
 | 2 | Context window 用量、增加／刪除行數、wall-clock 時間、API 時間 |
 | 3 | 5 小時與 7 天 rate limit 用量、重置時間、距離重置的倒數 |
 
-Session 沒有回報 rate limit 時（例如以 API key 計費）第 3 行不會出現。effort、fast mode、git 三個區段同樣只在適用時顯示。
+Session 沒有回報 rate limit 時（例如以 API key 計費）第 3 行不會出現。Session 名稱、effort、fast mode、git 四個區段同樣只在適用時顯示。
 
 ## 需求
 

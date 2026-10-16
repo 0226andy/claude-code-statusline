@@ -5,7 +5,7 @@ A three-line status line dashboard for [Claude Code](https://code.claude.com/doc
 [繁體中文說明](README.zh-TW.md)
 
 ```text
-◆ Opus 5.5 · high · ⚡fast · 📁 /Users/you/project on ⎇ main* · $1.23
+✎ refactor auth · ◆ Opus 5.5 · high · ⚡fast · 📁 /Users/you/project on ⎇ main* · $1.23
 ████████░░░░░░░░░░░░ 42% context · +156/-23 · 2h 15m 15s wall · 22m 15s api
 5h ██████░░░░ 63% ↻22:17 (2h 11m)  ·  7d █░░░░░░░░░ 18% ↻10/13 01:06 (3d 5h)
 ```
@@ -16,11 +16,11 @@ Bars are green below 50%, yellow from 50%, and red from 80%.
 
 | Line | Content |
 | --- | --- |
-| 1 | Model name, effort level, fast mode flag, current directory, git branch (`*` when the working tree is dirty), session cost in USD |
+| 1 | Session name (set with `/rename` or `--name`), model name, effort level, fast mode flag, current directory, git branch (`*` when the working tree is dirty), session cost in USD |
 | 2 | Context window usage bar, lines added / removed, wall-clock time, API time |
 | 3 | 5-hour and 7-day rate limit usage, reset time, and countdown to reset |
 
-Line 3 is omitted when the session reports no rate limits (for example, API key billing). The effort, fast mode, and git segments are likewise hidden when they do not apply.
+Line 3 is omitted when the session reports no rate limits (for example, API key billing). The session name, effort, fast mode, and git segments are likewise hidden when they do not apply.
 
 ## Requirements
 

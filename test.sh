@@ -43,4 +43,16 @@ check "past reset shows now" \
 "(now)" \
 "$(render '{"rate_limits":{"five_hour":{"used_percentage":5,"resets_at":1}}}' | sed -n 3p | grep -o '(now)')"
 
+check "session name from JSON" \
+"✎ my session · ◆ claude · 📁 . · \$0.00" \
+"$(render '{"session_name":"my session"}' | sed -n 1p)"
+
+TRANSCRIPT=$(mktemp)
+printf '%s\n' '{"type":"custom-title","customTitle":"old name"}' \
+               '{"type":"custom-title","customTitle":"renamed"}' >"$TRANSCRIPT"
+check "session name falls back to transcript" \
+"✎ renamed · ◆ claude · 📁 . · \$0.00" \
+"$(render "{\"transcript_path\":\"$TRANSCRIPT\"}" | sed -n 1p)"
+rm -f "$TRANSCRIPT"
+
 exit $FAILED
